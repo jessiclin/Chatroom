@@ -1,0 +1,23 @@
+{
+  "name": "chatroom",
+  "version": "1.0.0",
+  "description": "Simple Chat App using sockets ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jessiclin/Chatroom.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jessiclin/Chatroom/issues"
+  },
+  "homepage": "https://github.com/jessiclin/Chatroom#readme",
+  "dependencies": {
+    "mongodb": "^3.5.9",
+    "socket.io": "^2.3.0"
+  }
+}
