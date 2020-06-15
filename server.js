@@ -3,18 +3,20 @@ const mongo = require('mongodb').MongoClient;
 const client = require('socket.io').listen(4000).sockets;
 
 // Connect to MongoDB
-mongo.connect('mongodb://localhost:27017/chatroom', { useUnifiedTopology: true },
-    function(err, db){
+mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
+    function(err, ret){
         if (err){
             throw err;
         }
 
         console.log('MongoDB connected');
 
+        var db = ret.db('chatroom');
+        
         // Connect to socket.io 
-        client.on('connection', function(){
+        client.on('connection', function(socket){
             // use db to run queries 
-            let chat = db.collections('chats');
+            let chat = db.collection('chats');
 
             // Function to send status 
             sendStatus = function(status){
@@ -55,7 +57,7 @@ mongo.connect('mongodb://localhost:27017/chatroom', { useUnifiedTopology: true }
             });
 
             // Handle clear 
-            socket.one('clear', function(data){
+            socket.on('clear', function(data){
                 // Remove all chats from the collection 
                 chat.remove({}, function(){
                     socket.emit('cleared');
