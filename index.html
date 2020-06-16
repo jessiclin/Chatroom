@@ -4,36 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Bootstrap 4 --> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Chatroom</title>
     <style>
-        #messages{height : 300px;}
+        #messages{height : 300px;  
+                padding-top: 10px;
+                padding-right: 15px;
+                padding-bottom: 10px;
+                padding-left: 15px;}
     </style>
 </head>
 <body>
+    <!-- Using grid system --> 
     <div class="container">
         <div class="row">
-            <div class = "col-md-6 offset-md-3 col-sm-12">
-                <h1 class = "text-center">
-                    MongoChat
-                    <button id = "clear" class="btn btn-danger"> Clear </button>
-                    <div id="status"></div>
-                    <div id = "chat">
-                        <input type="text" id = "username" class = "form-control" placeholder = "Enter Name">
-                        <br>
-                        <div class="card">
-                            <div id = "messages" class="card-block">
-
-                            </div>
-                        </div>
-                        <br>
-                        <textarea id = "textarea" class = "form-control" placeholder="Enter message"></textarea>
-                    </div>
+            <!-- col-md-6 = 6 column div
+                 offset-md-3 = Push to middle 
+                 col-sm-12 = Single 12 column div on small screens -->
+            <div class="col-md-6 offset-md-3 col-sm-12">
+                <h1 class="text-center">
+                    Chatroom 
+                    <button id="clear" class="btn btn-danger">Clear</button>
                 </h1>
+                <div id="status"></div>
+                <div id="chat">
+                    <input type="text" id="username" class="form-control" placeholder="Enter name...">
+                    <br>
+                    <div class="card">
+                        <div id="messages" class="card-block"></div>
+                    </div>
+                    <br>
+                    <textarea id="textarea" class="form-control" placeholder="Enter message..."></textarea>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Socket.io -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <!-- Client side script -->
     <script>
         (function(){
             var element = function(id){
@@ -47,14 +57,14 @@
             var textarea = element('textarea');
             var clearBtn = element('clear');
 
-            // Set default status 
+            // Set default status (empty)
             var statusDefault = status.textContent;
 
-            
             var setStatus = function(s){
                 // Set status 
                 status.textContent = s;
-                console.log("set status");
+
+                // Set status to default after 4 seconds
                 if (s != statusDefault){
                     var delay = setTimeout(function(){
                         setStatus(statusDefault);
@@ -63,11 +73,61 @@
             }
 
             // Connect to socket.io   
-            var socket = io.connect('http://127.0.0.1:4000');
+            var socket = io.connect('http://localhost:4000');
 
-            // Check for connection 
+            // Check for connection
             if (socket !== undefined){
                 console.log('Connected to socket');
+
+                // Handle output 
+                socket.on('output', function(data){
+                    //console.log(data);
+                    if(data.length){
+                        for(var x = 0; x < data.length; x++){
+                            // Build out message div 
+                            var message = document.createElement('div');
+                            message.setAttribute('class', 'chat-message');
+                            message.textContent = data[x].name + ': ' + data[x].message;
+
+                            messages.appendChild(message);
+                            // Most recent chat on top 
+                            messages.insertBefore(messages.lastChild, message)
+                        }
+                    }
+                });
+                
+                // Handle input 
+                textarea.addEventListener('keydown', function(event){
+                    // keycode 13 is Return/Enter
+                    if(event.which === 13 && event.shiftKey === false){
+                        // Emit to server input
+                        socket.emit('input', {name: username.value, message: textarea.value});
+
+                        event.preventDefault();
+                    }
+                });
+
+                // Handle clearing the chat 
+                clearBtn.addEventListener('click', function(){
+                    // Emit to clear event 
+                    socket.emit('clear');
+                });
+
+                // Clear messages 
+                socket.on('cleared', function(){
+                    messages.textContent = '';
+                });
+
+                // Get status from server 
+                socket.on('status', function(data){
+                    // Get message status 
+                    setStatus((typeof data === 'object') ? data.message : data);
+
+                    // If status is clear, clear text 
+                    if (data.clear){
+                        textarea.value = '';
+                    }
+                });
             }
         })();
     </script>

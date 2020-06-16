@@ -2,17 +2,19 @@ const mongo = require('mongodb').MongoClient;
 // Run socket.io on port 4000 
 const client = require('socket.io').listen(4000).sockets;
 
-// Connect to MongoDB
+
+// Connect to MongoDB using localhost 
 mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
-    function(err, ret){
+    function(err, monClient){
         if (err){
             throw err;
         }
 
         console.log('MongoDB connected');
 
-        var db = ret.db('chatroom');
-        
+        // Get database object 
+        var db = monClient.db('chatroom');
+
         // Connect to socket.io 
         client.on('connection', function(socket){
             // use db to run queries 
