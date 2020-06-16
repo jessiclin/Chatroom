@@ -46,7 +46,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 }
                 else{
                     // Insert message into database 
-                    chat.insert({name: name, message: message}, function(){
+                    chat.insertOne({name: name, message: message}, function(){
                         client.emit('output', [data]);
 
                         // Send status object 
@@ -61,7 +61,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
             // Handle clear 
             socket.on('clear', function(data){
                 // Remove all chats from the collection 
-                chat.remove({}, function(){
+                chat.deleteMany({}, function(){
                     socket.emit('cleared');
                 });
             });
