@@ -77,6 +77,7 @@
 
             // Check for connection
             if (socket !== undefined){
+                // Get user name 
                 console.log('Connected to socket');
 
                 // Handle output 
@@ -86,6 +87,15 @@
                         for(var x = 0; x < data.length; x++){
                             // Build out message div 
                             var message = document.createElement('div');
+                            message.style.textAlign = "right";
+
+                            if (data[x].name === username.value){
+                                message.style.textAlign = "right";
+                            }
+                            else{
+                                message.style.textAlign = "left";
+                            }
+                            
                             message.setAttribute('class', 'chat-message');
                             message.textContent = data[x].name + ': ' + data[x].message;
 
@@ -102,7 +112,7 @@
                     if(event.which === 13 && event.shiftKey === false){
                         // Emit to server input
                         socket.emit('input', {name: username.value, message: textarea.value});
-
+                        textarea.value = "";
                         event.preventDefault();
                     }
                 });
