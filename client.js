@@ -31,7 +31,7 @@ var socket = io.connect('http://localhost:4000');
 if (socket !== undefined){
     console.log('Connected to socket');
 
-    // Get username
+    socket.emit("get-chats");
 
     // Handle output 
     socket.on('output', function(data){
