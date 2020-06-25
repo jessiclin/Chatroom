@@ -19,20 +19,40 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
         client.on('connection', function(socket){
             // use db to run queries 
             let chat = db.collection('chats');
+            let login = db.collection('users');
 
             // Function to send status 
             sendStatus = function(status){
                 // Pass status from server to client 
                 socket.emit('status', status);
             }
+            
+            // Handle login 
+            socket.on('login', function(data){
+                let user = data.username;
+                let pass = data.password; 
+
+                //var username = login.find({ "user" : data.username});
+                login.find({"user" : user, "pass" : pass}).toArray(function(err, result){
+                    if (err){
+                        throw err;
+                    }
+
+                    if (result.length === 1){
+                        socket.emit("success");
+                    }
+                });
+            });
 
             // Get chats from mongo collection 
-            chat.find().limit(100).sort({_id:1}).toArray(function(err, result){
-                if (err){
-                    throw err;
-                }
+            socket.on('get-chats', function(data){
+                chat.find().limit(100).sort({_id:1}).toArray(function(err, result){
+                    if (err){
+                        throw err;
+                    }
 
-                socket.emit('output', result);
+                    socket.emit('output', result);
+                });
             });
 
             // Handle input events 

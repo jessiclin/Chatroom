@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Bootstrap 4 --> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Login</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 col-sm-12">
+                <h1 class="text-center">
+                    Chatroom Login 
+                </h1>
+                <div id="login-cred">
+                    <label for="user">Username</label>  
+                    <input type="text" id = "username" class="form-control">
+                    <br> 
+                    <label for="pass">Password</label> 
+                    <input type="text" id = "password" class="form-control">
+                    <br> 
+                    <button id="login" class="btn btn-danger">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.io -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    
+    <!-- Client side script -->
+    <script>
+
+        var element = function(id){
+            return document.getElementById(id);
+        }
+
+        var username = element('username');
+        var password = element('password');
+        var loginBtn = element('login');
+
+        // Connect to socket.io   
+        var socket = io.connect('http://localhost:4000');
+
+        // Check for connection
+        if (socket !== undefined){
+            console.log('Connected to socket');
+
+            // Handle login 
+            loginBtn.addEventListener('click', function(){
+                socket.emit('login', {username: username.value, password: password.value});
+            });
+
+            // Handle successful login 
+            socket.on('success', function(){
+                location.replace("index.html");
+            });
+        }
+    </script>
+</body>
+</html>
