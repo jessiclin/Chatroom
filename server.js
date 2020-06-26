@@ -20,6 +20,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
             // use db to run queries 
             let chat = db.collection('chats');
             let login = db.collection('users');
+            let mes = db.collection('messages');
 
             // Function to send status 
             sendStatus = function(status){
@@ -48,7 +49,18 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
 
             // Get chats from mongo collection 
             socket.on('get-chats', function(data){
-                chat.find().limit(100).sort({_id:1}).toArray(function(err, result){
+                chat.find({"group" : data}).toArray(function(err, result){
+                    if (err){
+                        throw err;
+                    }
+
+                    socket.emit('chats', result);
+                });
+            });
+
+            socket.on('get-messages', function(data){
+
+                mes.find({"group" : data}).toArray(function(err, result){
                     if (err){
                         throw err;
                     }
@@ -59,8 +71,9 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
 
             // Handle input events 
             socket.on('input', function(data){
-                let name = data.name;
+                let name = data.sender;
                 let message = data.message;
+                let group = data.group;
 
                 // Check that name and message exits 
                 if (name == '' || message == ''){
@@ -68,7 +81,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 }
                 else{
                     // Insert message into database 
-                    chat.insertOne({name: name, message: message}, function(){
+                    mes.insertOne({sender: name, group: group, message: message}, function(){
                         client.emit('output', [data]);
 
                         // Send status object 
@@ -83,8 +96,9 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
             // Handle clear 
             socket.on('clear', function(data){
                 // Remove all chats from the collection 
-                chat.deleteMany({}, function(){
-                    socket.emit('cleared');
+               // console.log(data);
+                mes.deleteMany({group: data}, function(){
+                    socket.emit('cleared')
                 });
             });
         });

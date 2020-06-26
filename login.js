@@ -22,6 +22,12 @@ if (socket !== undefined){
     // Handle successful login 
     socket.on('success', function(){
         sessionStorage.setItem('user', username.value);
+
+        var e = document.getElementById('error-login');
+        if (e !== null){
+            login_cred.removeChild(e);
+        }
+        console.log(e);
         location.replace("chatroom.html");
     });
 
