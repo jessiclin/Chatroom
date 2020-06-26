@@ -4,7 +4,7 @@ var element = function(id){
 
 // Get elements 
 var status = element('status');
-var username = element('username');
+var username = sessionStorage.getItem('name');
 var messages = element('messages');
 var textarea = element('textarea');
 var clearBtn = element('clear');
@@ -42,15 +42,17 @@ if (socket !== undefined){
                 var message = document.createElement('div');
                 message.style.textAlign = "right";
 
-                if (data[x].name === username.value){
+                if (data[x].name === username){
                     message.style.textAlign = "right";
+                    message.setAttribute('class', 'chat-message');
+                    message.textContent = data[x].message;
                 }
                 else{
                     message.style.textAlign = "left";
+                    message.setAttribute('class', 'chat-message');
+                    message.textContent = data[x].name + ': ' + data[x].message;
                 }
                 
-                message.setAttribute('class', 'chat-message');
-                message.textContent = data[x].name + ': ' + data[x].message;
 
                 messages.appendChild(message);
                 // Most recent chat on top 
@@ -64,7 +66,7 @@ if (socket !== undefined){
         // keycode 13 is Return/Enter
         if(event.which === 13 && event.shiftKey === false){
             // Emit to server input
-            socket.emit('input', {name: username.value, message: textarea.value});
+            socket.emit('input', {name: username, message: textarea.value});
             textarea.value = "";
             event.preventDefault();
         }

@@ -20,6 +20,7 @@ if (socket !== undefined){
 
     // Handle successful login 
     socket.on('success', function(){
+        sessionStorage.setItem('name', username.value);
         location.replace("chatroom.html");
     });
 }
