@@ -1,14 +1,14 @@
-var element = function(id){
+let element = function(id){
     return document.getElementById(id);
 }
 
-var username = element('username');
-var password = element('password');
-var loginBtn = element('login');
-var login_cred = element('login-cred');
+let username = element('username');
+let password = element('password');
+let loginBtn = element('login');
+let login_cred = element('login-cred');
 
 // Connect to socket.io   
-var socket = io.connect('http://localhost:4000');
+let socket = io.connect('http://localhost:4000');
 
 // Check for connection
 if (socket !== undefined){
@@ -23,7 +23,7 @@ if (socket !== undefined){
     socket.on('success', function(){
         sessionStorage.setItem('user', username.value);
 
-        var e = document.getElementById('error-login');
+        let e = document.getElementById('error-login');
         if (e !== null){
             login_cred.removeChild(e);
         }
@@ -33,7 +33,7 @@ if (socket !== undefined){
 
     // Handle unsuccessful login 
     socket.on('unsuccessful', function(){
-        var error = document.createElement('div');
+        let error = document.createElement('div');
         error.setAttribute('id', 'error-login');
         error.textContent = "Invalid username or password";
         login_cred.appendChild(error);

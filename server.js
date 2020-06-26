@@ -13,7 +13,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
         console.log('MongoDB connected');
 
         // Get database object 
-        var db = monClient.db('chatroom');
+        let db = monClient.db('chatroom');
 
         // Connect to socket.io 
         client.on('connection', function(socket){
