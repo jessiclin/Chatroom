@@ -4,7 +4,7 @@ var element = function(id){
 
 // Get elements 
 var status = element('status');
-var username = sessionStorage.getItem('name');
+var username = sessionStorage.getItem('user');
 var messages = element('messages');
 var textarea = element('textarea');
 var clearBtn = element('clear');
@@ -40,7 +40,6 @@ if (socket !== undefined){
             for(var x = 0; x < data.length; x++){
                 // Build out message div 
                 var message = document.createElement('div');
-                message.style.textAlign = "right";
 
                 if (data[x].name === username){
                     message.style.textAlign = "right";

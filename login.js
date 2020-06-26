@@ -5,6 +5,7 @@ var element = function(id){
 var username = element('username');
 var password = element('password');
 var loginBtn = element('login');
+var login_cred = element('login-cred');
 
 // Connect to socket.io   
 var socket = io.connect('http://localhost:4000');
@@ -20,7 +21,15 @@ if (socket !== undefined){
 
     // Handle successful login 
     socket.on('success', function(){
-        sessionStorage.setItem('name', username.value);
+        sessionStorage.setItem('user', username.value);
         location.replace("chatroom.html");
+    });
+
+    // Handle unsuccessful login 
+    socket.on('unsuccessful', function(){
+        var error = document.createElement('div');
+        error.setAttribute('id', 'error-login');
+        error.textContent = "Invalid username or password";
+        login_cred.appendChild(error);
     });
 }

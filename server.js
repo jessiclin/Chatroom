@@ -30,9 +30,8 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
             // Handle login 
             socket.on('login', function(data){
                 let user = data.username;
-                let pass = data.password; 
+                let pass = data.password;
 
-                //var username = login.find({ "user" : data.username});
                 login.find({"user" : user, "pass" : pass}).toArray(function(err, result){
                     if (err){
                         throw err;
@@ -40,6 +39,9 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
 
                     if (result.length === 1){
                         socket.emit("success");
+                    }
+                    else{
+                        socket.emit("unsuccessful");
                     }
                 });
             });
