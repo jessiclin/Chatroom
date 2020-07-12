@@ -5,13 +5,14 @@ let element = function(id){
 // Get elements 
 let status = element('status');
 let cred = sessionStorage.getItem('cred');
-let username = "";
 let messages = element('messages');
 let textarea = element('textarea');
 let clearBtn = element('clear');
 let all_chats = element('all-chats');
+let logout = element('logout');
 let group = [];
 let users = [];
+let username = '';
 
 // Set default status (empty)
 let statusDefault = status.textContent;
@@ -41,7 +42,6 @@ if (socket !== undefined){
     // Handle getting username 
     socket.on('username', function(data){
         username = data;    
-        console.log(username);
     });
 
     //socket.emit("get-chats");
@@ -71,10 +71,10 @@ if (socket !== undefined){
                 all_chats.insertBefore(all_chats.lastChild, chat);
             }
 
-            console.log(data[0].users);
+
             // Add event listeners 
             for (let x = 1; x < all_chats.childNodes.length; x++){
-                console.log(all_chats.childNodes[x].id);
+  
                 if (all_chats.childNodes[x].id === "chat-button"){
                  all_chats.childNodes[x].addEventListener('click', function(){
                      socket.emit('clear');
@@ -119,7 +119,6 @@ if (socket !== undefined){
         // keycode 13 is Return/Enter
         if(event.which === 13 && event.shiftKey === false){
             // Emit to server input
-            console.log(username, " ", cred);
             socket.emit('input', {from : username, email: cred, group: group, users: users, message: textarea.value});
             textarea.value = "";
             event.preventDefault();
@@ -135,6 +134,12 @@ if (socket !== undefined){
     // Clear messages 
     socket.on('cleared', function(){
         messages.textContent = '';
+    });
+
+    // Handle logout
+    logout.addEventListener('click', function(){
+        sessionStorage.clear();
+        location.replace('login.html');
     });
 
     // Get status from server 
