@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+
 const mongo = require('mongodb').MongoClient;
 // Run socket.io on port 4000 
 const client = require('socket.io').listen(4000).sockets;
@@ -34,13 +36,23 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 let password = data.password;
 
 
-                users.find({email: email, pass: password}).toArray(function(err, result){
+                users.find({email: email}).toArray(function(err, result){
                     if (err){
                         throw err;
                     }
 
                     if (result.length === 1){
-                        socket.emit('login-success', result[0]);
+                        let hash = result[0].pass;
+                        bcrypt.compare(password, hash, (err, res) => {
+                            if (err) {
+                              throw err;
+                            }
+
+                            if(res)
+                                socket.emit('login-success', result[0]);    
+                            else
+                                socket.emit('login-unsuccessful');
+                        })
                     }
                     else{
                         socket.emit('login-unsuccessful');
@@ -66,15 +78,22 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                     }
                     else{
                         // Enter new account 
-                        users.insertOne({email: email, first : first, last: last, user : user, pass : pass}, function(){
-                            client.emit('output', {email: email, first : first, last: last, user : user, pass : pass});
+                        bcrypt.hash(pass, 10, (err, hash) => {
+                            if (err) {
+                            console.error(err)
+                            return
+                          }
+
+                          users.insertOne({email: email, first : first, last: last, user : user, pass : hash}, function(){
+                            client.emit('output', email);
 
                             // Send status object 
                             sendStatus({
                                 message: 'Account created successfully',
                                 clear: true
                             });
-                        });
+                            });
+                        })
                     }
                 });
             });
