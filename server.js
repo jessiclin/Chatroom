@@ -19,7 +19,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
         client.on('connection', function(socket){
             // use db to run queries 
             let chat = db.collection('chats');
-            let login = db.collection('users');
+            let users = db.collection('users');
             let mes = db.collection('messages');
 
             // Function to send status 
@@ -27,40 +27,81 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 // Pass status from server to client 
                 socket.emit('status', status);
             }
-            
+
             // Handle login 
             socket.on('login', function(data){
-                let user = data.username;
-                let pass = data.password;
+                let email = data.email;
+                let password = data.password;
 
-                login.find({"user" : user, "pass" : pass}).toArray(function(err, result){
+
+                users.find({email: email, pass: password}).toArray(function(err, result){
                     if (err){
                         throw err;
                     }
 
                     if (result.length === 1){
-                        socket.emit("success");
+                        socket.emit('login-success', result[0]);
                     }
                     else{
-                        socket.emit("unsuccessful");
+                        socket.emit('login-unsuccessful');
                     }
+                });
+            });
+            
+            // Handle creating a new account 
+            socket.on('new-acct', function(data){
+                let email = data.email;
+                let first = data.first;
+                let last = data.last;
+                let user = data.user;
+                let pass = data.pass;
+
+                // Check if email is in use
+                users.find({email : email}).toArray(function(err, result){
+                    if (err){
+                        throw err;
+                    }
+                    if (result.length > 0){
+                        client.emit('unsuccessful');
+                    }
+                    else{
+                        // Enter new account 
+                        users.insertOne({email: email, first : first, last: last, user : user, pass : pass}, function(){
+                            client.emit('output', {email: email, first : first, last: last, user : user, pass : pass});
+
+                            // Send status object 
+                            sendStatus({
+                                message: 'Account created successfully',
+                                clear: true
+                            });
+                        });
+                    }
+                });
+            });
+
+            // Get username 
+            socket.on('get-user', function(data){
+
+                users.find({email : data}).toArray(function(err, result){
+                    if (err)
+                        throw err;
+  
+                    socket.emit('username', result[0].user);
                 });
             });
 
             // Get chats from mongo collection 
             socket.on('get-chats', function(data){
-                chat.find({"group" : data}).toArray(function(err, result){
+                chat.find({group : data}).toArray(function(err, result) {
                     if (err){
                         throw err;
                     }
-
                     socket.emit('chats', result);
-                });
+                })
             });
 
             socket.on('get-messages', function(data){
-
-                mes.find({"group" : data}).toArray(function(err, result){
+                mes.find({users : data.users, group : data.group}).toArray(function(err, result){
                     if (err){
                         throw err;
                     }
@@ -71,9 +112,11 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
 
             // Handle input events 
             socket.on('input', function(data){
-                let name = data.sender;
+                let name = data.from;
+                let email = data.email;
                 let message = data.message;
                 let group = data.group;
+                let users = data.users;
 
                 // Check that name and message exits 
                 if (name == '' || message == ''){
@@ -81,7 +124,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 }
                 else{
                     // Insert message into database 
-                    mes.insertOne({sender: name, group: group, message: message}, function(){
+                    mes.insertOne({from: name, email : email, group: group, users:users, message: message}, function(){
                         client.emit('output', [data]);
 
                         // Send status object 
@@ -93,7 +136,7 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 }
             });
 
-            // Handle clear 
+            //Handle clear 
             socket.on('clear', function(data){
                 // Remove all chats from the collection 
                // console.log(data);

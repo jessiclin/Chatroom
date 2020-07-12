@@ -2,10 +2,11 @@ let element = function(id){
     return document.getElementById(id);
 }
 
-let username = element('username');
+let email = element('email');
 let password = element('password');
 let loginBtn = element('login');
 let login_cred = element('login-cred');
+let new_acct = element('new-account');
 
 // Connect to socket.io   
 let socket = io.connect('http://localhost:4000');
@@ -16,26 +17,32 @@ if (socket !== undefined){
 
     // Handle login 
     loginBtn.addEventListener('click', function(){
-        socket.emit('login', {username: username.value, password: password.value});
+        socket.emit('login', {email: email.value, password: password.value});
     });
 
+
     // Handle successful login 
-    socket.on('success', function(){
-        sessionStorage.setItem('user', username.value);
+    socket.on('login-success', function(data){
+        sessionStorage.setItem('cred', data.email);
 
         let e = document.getElementById('error-login');
         if (e !== null){
             login_cred.removeChild(e);
         }
-        console.log(e);
+
         location.replace("chatroom.html");
     });
 
     // Handle unsuccessful login 
-    socket.on('unsuccessful', function(){
+    socket.on('login-unsuccessful', function(){
         let error = document.createElement('div');
         error.setAttribute('id', 'error-login');
-        error.textContent = "Invalid username or password";
+        error.textContent = "Invalid email or password";
         login_cred.appendChild(error);
+    });
+
+    // Handle creating a new account 
+    new_acct.addEventListener('click', function(){
+        location.replace('new-account.html');
     });
 }
