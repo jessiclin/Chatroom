@@ -30,7 +30,7 @@ if (socket !== undefined){
             login_cred.removeChild(e);
         }
 
-        location.replace("chatroom.html");
+        location.replace("../html/chat.html");
     });
 
     // Handle unsuccessful login 
@@ -39,10 +39,11 @@ if (socket !== undefined){
         error.setAttribute('id', 'error-login');
         error.textContent = "Invalid email or password";
         login_cred.appendChild(error);
+        login_cred.insertBefore(error, login_cred.firstChild);
     });
 
     // Handle creating a new account 
     new_acct.addEventListener('click', function(){
-        location.replace('new-account.html');
+        location.replace('../html/new-account.html');
     });
 }

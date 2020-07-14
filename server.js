@@ -155,14 +155,6 @@ mongo.connect('mongodb://127.0.0.1', { useUnifiedTopology: true },
                 }
             });
 
-            //Handle clear 
-            socket.on('clear', function(data){
-                // Remove all chats from the collection 
-               // console.log(data);
-                mes.deleteMany({group: data}, function(){
-                    socket.emit('cleared')
-                });
-            });
         });
 
     });

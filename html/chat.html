@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="css/style.css">
+  <title>ChatCord App</title>
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1><i class="fas fa-smile"></i> ChatCord</h1>
+            <a id = 'logout' class="btn">Logout</a>
+        </header>
+      
+        <main class="chat-main">
+            <div id = 'all-chats' class="chat-sidebar">
+                
+            </div>
+        
+            <div id = 'messages' class="chat-messages">
+            </div>
+        </main>
+
+
+        <div class="chat-form-container">
+            <form id="chat-form">
+                <textarea id="textarea" class="form-control" placeholder="Enter message..."></textarea>
+                <a id='send' class="btn"><i class="fas fa-paper-plane"></i> Send</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Socket.io -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="../js/chat.js"></script>
+</body>
+</html>
