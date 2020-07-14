@@ -76,9 +76,14 @@ if (socket !== undefined){
       
                     if (all_chats.childNodes[x].id === "chat-button"){
                      all_chats.childNodes[x].addEventListener('click', function(){
-                         socket.emit('clear');
-                         users = data[x-3].users;
-                         group = data[x-3].group;
+                         //socket.emit('clear');
+                         var child = messages.lastElementChild;  
+                         while (child) { 
+                             messages.removeChild(child); 
+                             child = messages.lastElementChild; 
+                         } 
+                         users = data[x-1].users;
+                         group = data[x-1].group;
                          socket.emit('get-messages', {group: group, users : users});
                      });
                      }
