@@ -97,11 +97,14 @@ if (socket !== undefined){
                         // Build out message div 
                         let messageDiv = document.createElement('div');
                         messageDiv.setAttribute('class', 'message');
+
                         let insName = document.createElement('p');
                         insName.setAttribute('class', 'meta')
                         insName.setAttribute('id', 'msg-sender');
+
                         let message = document.createElement('p');
                         message.setAttribute('class', 'text');
+
                         if (data[x].email ===  cred){
                             message.style.textAlign = "right";
                             message.textContent = data[x].message;
@@ -118,13 +121,15 @@ if (socket !== undefined){
                         messageDiv.appendChild(message);
                         messageDiv.insertBefore(messageDiv.lastChild, message);
                         messages.appendChild(messageDiv);
+
                         // Most recent chat on top 
                         messages.insertBefore(messages.lastChild, messageDiv);
                     }
+                    
                 }
 
-                if (document.getElementById('msg-sender') !== null)
-                    console.log(messages.lastChild.getAttribute('class'));
+                // if (document.getElementById('msg-sender') !== null)
+                //     console.log(messages.lastChild.getAttribute('class'));
             });
 
             // Handle input 
