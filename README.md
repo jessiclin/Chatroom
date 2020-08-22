@@ -1,7 +1,11 @@
 # Chatroom
+
 # Run Instructions: 
 > npm start 
 
-Open the "login.html" file 
+1. Open the "login.html" file 
 
-Enter credentials 
+2. Enter login credentials 
+
+# To Quit 
+> CTRL-C  
